@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+playwright
+beautifulsoup4
+sentence-transformers
+faiss-cpu
+google-genai
+python-dotenv
+numpy
