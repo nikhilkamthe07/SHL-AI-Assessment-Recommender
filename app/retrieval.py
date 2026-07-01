@@ -2,9 +2,6 @@ import json
 import faiss
 from sentence_transformers import SentenceTransformer
 
-# Load embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
 # Load FAISS index
 index = faiss.read_index("vectorstore/faiss.index")
 
@@ -12,12 +9,25 @@ index = faiss.read_index("vectorstore/faiss.index")
 with open("data/catalog.json", "r", encoding="utf-8") as f:
     catalog = json.load(f)
 
+# Model is loaded only when needed
+model = None
+
+
+def get_model():
+    global model
+
+    if model is None:
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return model
+
 
 def search_assessments(query, top_k=5):
-    # Convert query to embedding
-    query_embedding = model.encode([query])
 
-    # Search FAISS
+    embedding_model = get_model()
+
+    query_embedding = embedding_model.encode([query])
+
     distances, indices = index.search(query_embedding, top_k)
 
     results = []
@@ -28,9 +38,10 @@ def search_assessments(query, top_k=5):
 
     return results
 
-from app.chatbot import generate_response
 
 if __name__ == "__main__":
+
+    from app.chatbot import generate_response
 
     query = input("Recruiter Query: ")
 
@@ -38,5 +49,5 @@ if __name__ == "__main__":
 
     answer = generate_response(query, results)
 
-    print("\n==============================\n")
+    print("\n=============================\n")
     print(answer)

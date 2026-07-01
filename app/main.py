@@ -24,6 +24,18 @@ class ChatRequest(BaseModel):
     messages: List[Message]
 
 
+# ---------------- Home Endpoint ---------------- #
+
+@app.get("/")
+def home():
+    return {
+        "message": "Welcome to the SHL AI Assessment Recommendation API",
+        "status": "running",
+        "health": "/health",
+        "documentation": "/docs"
+    }
+
+
 # ---------------- Health Endpoint ---------------- #
 
 @app.get("/health")
@@ -98,7 +110,6 @@ def chat(request: ChatRequest):
         recommendations = []
 
         for item in results:
-
             recommendations.append({
                 "name": item.get("name", ""),
                 "url": item.get("url", "")
